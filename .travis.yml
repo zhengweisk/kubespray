@@ -137,6 +137,7 @@ script:
     -e download_localhost=true
     -e local_release_dir=/var/tmp/releases
     -e deploy_netchecker=true
+    -vvv
     cluster.yml
 
     # Tests Cases
