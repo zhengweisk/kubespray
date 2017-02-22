@@ -82,7 +82,8 @@ before_script:
     - echo $GCE_CREDENTIALS > $HOME/.ssh/gce.json
     - chmod 400 $HOME/.ssh/id_rsa
     - ansible-playbook --version
-    - export PYPATH=$([ $BOOTSTRAP_OS = none ] && echo /usr/bin/python || echo /opt/bin/python)
+    - export PYPATH=$([ $BOOTSTRAP_OS = coreos ] && echo /opt/bin/python || echo /usr/bin/python )
+    - echo $PYPATH
   script:
     - pwd
     - ls
@@ -480,7 +481,7 @@ before_script:
   CLOUD_REGION: us-central1-b
   CLUSTER_MODE: separate
   IDEMPOT_CHECK: "false"
-  BOOTSTRAP_OS: 'ubuntu'
+  BOOTSTRAP_OS: ubuntu
 
 .centos7_calico_ha_variables: &centos7_calico_ha_variables
 # stage: deploy-gce-special
