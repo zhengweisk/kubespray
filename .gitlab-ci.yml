@@ -480,6 +480,7 @@ before_script:
   CLOUD_REGION: us-central1-b
   CLUSTER_MODE: separate
   IDEMPOT_CHECK: "false"
+  BOOTSTRAP_OS: 'ubuntu'
 
 .centos7_calico_ha_variables: &centos7_calico_ha_variables
 # stage: deploy-gce-special
