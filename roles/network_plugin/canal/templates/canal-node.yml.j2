@@ -3,6 +3,7 @@ kind: DaemonSet
 apiVersion: extensions/v1beta1
 metadata:
   name: canal-node
+  namespace: {{ system_namespace }}
   labels:
     k8s-app: canal-node
 spec:
@@ -18,6 +19,9 @@ spec:
         k8s-app: canal-node
     spec:
       hostNetwork: true
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
       volumes:
         # Used by calico/node.
         - name: lib-modules
@@ -143,6 +147,9 @@ spec:
             # Disable Calico BGP.  Calico is simply enforcing policy.
             - name: CALICO_NETWORKING
               value: "false"
+            # Cluster type to identify the deployment type
+            - name: CLUSTER_TYPE
+              value: "kubespray,canal"
             # Disable file logging so `kubectl logs` works.
             - name: CALICO_DISABLE_FILE_LOGGING
               value: "true"
@@ -174,3 +181,7 @@ spec:
             - name: "canal-certs"
               mountPath: "{{ canal_cert_dir }}"
               readOnly: true
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
