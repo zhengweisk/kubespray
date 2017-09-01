@@ -1,4 +1,3 @@
----
 docker_kernel_min_version: '0'
 
 # versioning: docker-io itself is pinned at docker 1.5

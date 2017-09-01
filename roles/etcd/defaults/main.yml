@@ -15,16 +15,12 @@ etcd_script_dir: "{{ bin_dir }}/etcd-scripts"
 etcd_heartbeat_interval: "250"
 etcd_election_timeout: "5000"
 
-etcd_metrics: "basic"
-
 # Limits
 etcd_memory_limit: 512M
 
 # Uncomment to set CPU share for etcd
-# etcd_cpu_limit: 300m
+#etcd_cpu_limit: 300m
 
 etcd_node_cert_hosts: "{{ groups['k8s-cluster'] | union(groups.get('calico-rr', [])) }}"
 
-etcd_compaction_retention: "8"
-
-etcd_vault_mount_path: etcd
+etcd_compaction_retention: "0"

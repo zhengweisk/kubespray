@@ -21,9 +21,6 @@ spec:
         kubernetes.io/cluster-service: "true"
         kubespray/dnsmasq-checksum: "{{ dnsmasq_stat.stat.checksum }}"
     spec:
-      tolerations:
-        - effect: NoSchedule
-          operator: Exists
       containers:
         - name: dnsmasq
           image: "{{ dnsmasq_image_repo }}:{{ dnsmasq_image_tag }}"
@@ -38,6 +35,7 @@ spec:
             capabilities:
               add:
                 - NET_ADMIN
+          imagePullPolicy: IfNotPresent
           resources:
             limits:
               cpu: {{ dns_cpu_limit }}
@@ -66,3 +64,4 @@ spec:
           hostPath:
             path: /etc/dnsmasq.d-available
       dnsPolicy: Default  # Don't use cluster DNS.
+

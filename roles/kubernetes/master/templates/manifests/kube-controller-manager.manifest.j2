@@ -24,7 +24,7 @@ spec:
     command:
     - /hyperkube
     - controller-manager
-    - --kubeconfig={{ kube_config_dir }}/kube-controller-manager-kubeconfig.yaml
+    - --master={{ kube_apiserver_endpoint }}
     - --leader-elect=true
     - --service-account-private-key-file={{ kube_cert_dir }}/apiserver-key.pem
     - --root-ca-file={{ kube_cert_dir }}/ca.pem
@@ -35,9 +35,6 @@ spec:
     - --node-monitor-period={{ kube_controller_node_monitor_period }}
     - --pod-eviction-timeout={{ kube_controller_pod_eviction_timeout }}
     - --v={{ kube_log_level }}
-{% if rbac_enabled %}
-    - --use-service-account-credentials
-{% endif %}
 {% if cloud_provider is defined and cloud_provider in ["openstack", "azure", "vsphere"] %}
     - --cloud-provider={{cloud_provider}}
     - --cloud-config={{ kube_config_dir }}/cloud_config
@@ -45,15 +42,9 @@ spec:
     - --cloud-provider={{cloud_provider}}
 {% endif %}
 {% if kube_network_plugin is defined and kube_network_plugin == 'cloud' %}
-    - --configure-cloud-routes=true
-{% endif %}
-{% if kube_network_plugin is defined and kube_network_plugin in ["cloud", "flannel"] %}
     - --allocate-node-cidrs=true
+    - --configure-cloud-routes=true
     - --cluster-cidr={{ kube_pods_subnet }}
-    - --service-cluster-ip-range={{ kube_service_addresses }}
-{% endif %}
-{% if kube_feature_gates %}
-    - --feature-gates={{ kube_feature_gates|join(',') }}
 {% endif %}
 {% if controller_mgr_custom_flags is string %}
     - {{ controller_mgr_custom_flags }}
@@ -70,42 +61,20 @@ spec:
       initialDelaySeconds: 30
       timeoutSeconds: 10
     volumeMounts:
-    - mountPath: /etc/ssl
-      name: ssl-certs-host
-      readOnly: true
-{% for dir in ssl_ca_dirs %}
-    - mountPath: {{ dir }}
-      name: {{ dir | regex_replace('^/(.*)$', '\\1' ) | regex_replace('/', '-') }}
-      readOnly: true
-{% endfor %}
-    - mountPath: "{{kube_config_dir}}/ssl"
-      name: etc-kube-ssl
-      readOnly: true
-    - mountPath: "{{ kube_config_dir }}/kube-controller-manager-kubeconfig.yaml"
-      name: kubeconfig
+    - mountPath: {{ kube_cert_dir }}
+      name: ssl-certs-kubernetes
       readOnly: true
 {% if cloud_provider is defined and cloud_provider in ["openstack", "azure", "vsphere" ] %}
-    - mountPath: "{{ kube_config_dir }}/cloud_config"
+    - mountPath: {{ kube_config_dir }}/cloud_config
       name: cloudconfig
       readOnly: true
 {% endif %}
   volumes:
-  - name: ssl-certs-host
-    hostPath:
-      path: /etc/ssl
-{% for dir in ssl_ca_dirs %}
-  - name: {{ dir | regex_replace('^/(.*)$', '\\1' ) | regex_replace('/', '-') }}
-    hostPath:
-      path: {{ dir }}
-{% endfor %}
-  - name: etc-kube-ssl
-    hostPath:
-      path: "{{ kube_config_dir }}/ssl"
-  - name: kubeconfig
-    hostPath:
-      path: "{{ kube_config_dir }}/kube-controller-manager-kubeconfig.yaml"
+  - hostPath:
+      path: {{ kube_cert_dir }}
+    name: ssl-certs-kubernetes
 {% if cloud_provider is defined and cloud_provider in ["openstack", "azure", "vsphere"] %}
   - hostPath:
-      path: "{{ kube_config_dir }}/cloud_config"
+      path: {{ kube_config_dir }}/cloud_config
     name: cloudconfig
 {% endif %}

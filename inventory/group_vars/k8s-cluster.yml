@@ -23,7 +23,7 @@ kube_users_dir: "{{ kube_config_dir }}/users"
 kube_api_anonymous_auth: false
 
 ## Change this to use another Kubernetes version, e.g. a current beta release
-kube_version: v1.7.3
+kube_version: v1.6.7
 
 # Where the binaries will be downloaded.
 # Note: ensure that you've enough disk space (about 1G)
@@ -135,13 +135,12 @@ docker_daemon_graph: "/var/lib/docker"
 ## This string should be exactly as you wish it to appear.
 ## An obvious use case is allowing insecure-registry access
 ## to self hosted registries like so:
-
-docker_options: "--insecure-registry={{ kube_service_addresses }} --graph={{ docker_daemon_graph }}  {{ docker_log_opts }}"
+docker_options: "--insecure-registry={{ kube_service_addresses }} --graph={{ docker_daemon_graph }}"
 docker_bin_dir: "/usr/bin"
 
 # Settings for containerized control plane (etcd/kubelet/secrets)
 etcd_deployment_type: docker
-kubelet_deployment_type: host
+kubelet_deployment_type: docker
 cert_management: script
 vault_deployment_type: docker
 
@@ -153,15 +152,3 @@ efk_enabled: false
 
 # Helm deployment
 helm_enabled: false
-
-# dnsmasq
-# dnsmasq_upstream_dns_servers:
-#  - /resolvethiszone.with/10.0.4.250
-#  - 8.8.8.8
-
-#  Enable creation of QoS cgroup hierarchy, if true top level QoS and pod cgroups are created. (default true)
-# kubelet_cgroups_per_qos: true
-
-# A comma separated list of levels of node allocatable enforcement to be enforced by kubelet.
-# Acceptible options are 'pods', 'system-reserved', 'kube-reserved' and ''. Default is "".
-# kubelet_enforce_node_allocatable: pods

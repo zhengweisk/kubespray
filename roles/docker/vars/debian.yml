@@ -1,4 +1,3 @@
----
 docker_kernel_min_version: '3.10'
 
 # https://apt.dockerproject.org/repo/dists/debian-wheezy/main/filelist

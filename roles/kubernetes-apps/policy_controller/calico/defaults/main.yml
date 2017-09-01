@@ -1,4 +1,3 @@
----
 # Limits for calico apps
 calico_policy_controller_cpu_limit: 100m
 calico_policy_controller_memory_limit: 256M
